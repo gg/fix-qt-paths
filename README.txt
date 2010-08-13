@@ -15,6 +15,4 @@ qmake. See http://doc.trolltech.com/4.6/qt-conf.html for details.
 For convenience, fix_qt_paths also temporarily sets the QTDIR
 environment variable to the Qt installation path, and temporarily adds
 the Qt \bin directory to PATH. This allows for seamless integration with
-build scripts:
-
-  fix_qt_paths path\to\qt
+build scripts.
