@@ -1,5 +1,9 @@
 @echo off
 
+@rem Remember the current directory upon launching the script. 
+@rem It will be restored when the script ends.
+set RESTORE_DIR=%CD%
+
 if "%1" == "" goto error_Usage
 
 set QTDIR=%1
@@ -8,37 +12,35 @@ if not exist %QTDIR% goto error_QTDIR_not_found
 set QTBINDIR=%QTDIR%\bin
 if not exist %QTBINDIR% goto error_QTBINDIR_not_found
 
-set SCRIPT_DIR=%~dp0
+set UNXUTILSDIR=%~dp0%unxutils\bin
+if not exist %UNXUTILSDIR% goto error_unxutils_not_found
+
 
 @rem Ensure that QTDIR and QTBINDIR have absolute paths.
 cd %QTDIR%
 set QTDIR=%CD%
 set QTBINDIR=%QTDIR%\bin
+cd %~dp0
 
 set PATH=%QTBINDIR%;%PATH%
 @echo Added %QTBINDIR% to PATH.
 
-@rem The paths specified in qt.conf must be escaped (double backslashes).
-set QTDIR_ESCAPED_SLASHES=%QTDIR:\=\\\\%
-
 @rem Use sed to replace QTDIR in qt.conf.template with the absolute Qt
-@rem   installation path with forward slashes.
-@rem sed is part of UnxUtils, a collection of ports of common GNU utilities
-@rem   to native Win32.
-@rem For more about UnxUtils, see: http://unxutils.sourceforge.net
-cp %SCRIPT_DIR%\qt.conf.template %SCRIPT_DIR%\qt.conf
-%SCRIPT_DIR%\UnxUtils\sed -i "s'QTDIR'%QTDIR_ESCAPED_SLASHES%'g" %SCRIPT_DIR%\qt.conf
+@rem   installation path, escaped with double backslashes.
+cp qt.conf.template qt.conf
+set QTDIR_ESCAPED_SLASHES=%QTDIR:\=\\\\%
+%UNXUTILSDIR%\sed -i "s'QTDIR'%QTDIR_ESCAPED_SLASHES%'g" qt.conf
 
 @rem Place qt.conf alongside qmake.
-move %SCRIPT_DIR%\qt.conf %QTBINDIR%
+move qt.conf %QTBINDIR%
 
 @echo QTDIR is set to %QTDIR%
 @echo.
 @echo qt.conf written to %QTBINDIR%
 @type %QTBINDIR%\qt.conf
+@echo.
 
 @goto end
-
 
 :error_Usage
 @echo Usage: %0 path\to\qt-base-directory
@@ -55,5 +57,10 @@ set ERRORLEV=2
 set ERRORLEV=2
 @goto end
 
+:error_unxutils_not_found
+@echo ERROR: 'unxutils' directory does not exist.
+set ERRORLEV=3
+@goto end
+
 :end
-cd %SCRIPT_DIR%
+cd %RESTORE_DIR%
