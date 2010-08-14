@@ -12,9 +12,8 @@ if not exist %QTDIR% goto error_QTDIR_not_found
 set QTBINDIR=%QTDIR%\bin
 if not exist %QTBINDIR% goto error_QTBINDIR_not_found
 
-set UNXUTILSDIR=%~dp0%unxutils\bin
+set UNXUTILSDIR=%~dp0unxutils
 if not exist %UNXUTILSDIR% goto error_unxutils_not_found
-
 
 @rem Ensure that QTDIR and QTBINDIR have absolute paths.
 cd %QTDIR%
@@ -27,9 +26,10 @@ set PATH=%QTBINDIR%;%PATH%
 
 @rem Use sed to replace QTDIR in qt.conf.template with the absolute Qt
 @rem   installation path, escaped with double backslashes.
-cp qt.conf.template qt.conf
+copy qt.conf.template qt.conf
 set QTDIR_ESCAPED_SLASHES=%QTDIR:\=\\\\%
-%UNXUTILSDIR%\sed -i "s'QTDIR'%QTDIR_ESCAPED_SLASHES%'g" qt.conf
+call %UNXUTILSDIR%\add-to-path
+sed -i "s'QTDIR'%QTDIR_ESCAPED_SLASHES%'g" qt.conf
 
 @rem Place qt.conf alongside qmake.
 move qt.conf %QTBINDIR%
