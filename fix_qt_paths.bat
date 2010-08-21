@@ -2,12 +2,21 @@
 
 @rem Remember the current directory upon launching the script. 
 @rem It will be restored when the script ends.
-set RESTORE_DIR=%CD%
+set FIX_QT_PATHS_RESTORE_DIR=%CD%
 
 if "%1" == "" goto error_Usage
-
 set QTDIR=%1
 if not exist %QTDIR% goto error_QTDIR_not_found
+
+if exist %QTDIR%\%2 (
+set QTLIBDIR=%QTDIR%\%2
+) else if exist %2 (
+set QTLIBDIR=%2
+) else if exist %QTDIR%\lib (
+set QTLIBDIR=%QTDIR%\lib
+) else (
+goto error_QTLIBDIR_not_found
+)
 
 set QTBINDIR=%QTDIR%\bin
 if not exist %QTBINDIR% goto error_QTBINDIR_not_found
@@ -28,8 +37,10 @@ set PATH=%QTBINDIR%;%PATH%
 @rem   installation path, escaped with double backslashes.
 copy qt.conf.template qt.conf
 set QTDIR_ESCAPED_SLASHES=%QTDIR:\=\\\\%
+set QTLIBDIR_ESCAPED_SLASHES=%QTLIBDIR:\=\\\\%
 call %UNXUTILSDIR%\add-to-path
 sed -i "s'QTDIR'%QTDIR_ESCAPED_SLASHES%'g" qt.conf
+sed -i "s'QTLIBDIR'%QTLIBDIR_ESCAPED_SLASHES%'g" qt.conf
 
 @rem Place qt.conf alongside qmake.
 move qt.conf %QTBINDIR%
@@ -43,12 +54,17 @@ move qt.conf %QTBINDIR%
 @goto end
 
 :error_Usage
-@echo Usage: %0 path\to\qt-base-directory
+@echo Usage: %0 path\to\qt-base-directory path\to\qt-libraries
 set ERRORLEV=1
 @goto end
 
 :error_QTDIR_not_found
 @echo ERROR: Qt directory '%QTDIR%' does not exist.
+set ERRORLEV=2
+@goto end
+
+:error_QTLIBDIR_not_found
+@echo ERROR: Qt libraries directory '%QTLIBDIR%' does not exist.
 set ERRORLEV=2
 @goto end
 
@@ -63,4 +79,4 @@ set ERRORLEV=3
 @goto end
 
 :end
-cd %RESTORE_DIR%
+cd %FIX_QT_PATHS_RESTORE_DIR%
