@@ -8,13 +8,13 @@ if "%1" == "" goto error_Usage
 set QTDIR=%1
 if not exist %QTDIR% goto error_QTDIR_not_found
 
-if exist %QTDIR%\%2 (
-set QTLIBDIR=%QTDIR%\%2
-) else if exist %2 (
-set QTLIBDIR=%2
-) else if exist %QTDIR%\lib (
-set QTLIBDIR=%QTDIR%\lib
-) else (
+if "%2" == "" (
+	set QTLIBDIR=lib
+)
+
+if exist %QTDIR%\%QTLIBDIR% (
+set QTLIBDIR=%QTDIR%\%QTLIBDIR%
+) else if not exist %QTLIBDIR% (
 goto error_QTLIBDIR_not_found
 )
 
