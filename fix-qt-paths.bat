@@ -54,7 +54,7 @@ move qt.conf %QTBINDIR%
 @goto end
 
 :error_Usage
-@echo Usage: %0 path\to\qt-base-directory path\to\qt-libraries
+@echo Usage: %0 path\to\qt-base-directory [path\to\qt-libraries]
 set ERRORLEV=1
 @goto end
 
