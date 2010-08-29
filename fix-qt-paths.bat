@@ -24,6 +24,8 @@ if not exist %QTBINDIR% goto error_QTBINDIR_not_found
 set UNXUTILSDIR=%~dp0unxutils
 if not exist %UNXUTILSDIR% goto error_unxutils_not_found
 
+@echo Fixing Qt paths...
+
 @rem Ensure that QTDIR and QTBINDIR have absolute paths.
 cd %QTDIR%
 set QTDIR=%CD%
