@@ -32,7 +32,7 @@ set QTDIR=%CD%
 set QTBINDIR=%QTDIR%\bin
 cd %~dp0
 
-set PATH=%QTBINDIR%
+set PATH=%QTBINDIR%;%PATH%
 @echo Added %QTBINDIR% to PATH.
 
 @rem Use sed to replace QTDIR in qt.conf.template with the absolute Qt
