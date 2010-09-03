@@ -1,9 +1,5 @@
 @echo off
 
-@rem Remember the current directory upon launching the script. 
-@rem It will be restored when the script ends.
-set FIX_QT_PATHS_RESTORE_DIR=%CD%
-
 if "%1" == "" goto error_Usage
 set QTDIR=%1
 if not exist %QTDIR% goto error_QTDIR_not_found
@@ -25,27 +21,22 @@ set UNXUTILSDIR=%~dp0unxutils
 if not exist %UNXUTILSDIR% goto error_unxutils_not_found
 
 @echo Fixing Qt paths...
-
-@rem Ensure that QTDIR and QTBINDIR have absolute paths.
-cd %QTDIR%
-set QTDIR=%CD%
 set QTBINDIR=%QTDIR%\bin
-cd %~dp0
 
 set PATH=%QTBINDIR%;%PATH%
 @echo Added %QTBINDIR% to PATH.
 
 @rem Use sed to replace QTDIR in qt.conf.template with the absolute Qt
 @rem   installation path, escaped with double backslashes.
-copy qt.conf.template qt.conf
+copy %~dp0qt.conf.template %~dp0qt.conf
 set QTDIR_ESCAPED_SLASHES=%QTDIR:\=\\\\%
 set QTLIBDIR_ESCAPED_SLASHES=%QTLIBDIR:\=\\\\%
 call %UNXUTILSDIR%\add-to-path
-sed -i "s'QTDIR'%QTDIR_ESCAPED_SLASHES%'g" qt.conf
-sed -i "s'QTLIBDIR'%QTLIBDIR_ESCAPED_SLASHES%'g" qt.conf
+sed -i "s'QTDIR'%QTDIR_ESCAPED_SLASHES%'g" %~dp0qt.conf
+sed -i "s'QTLIBDIR'%QTLIBDIR_ESCAPED_SLASHES%'g" %~dp0qt.conf
 
 @rem Place qt.conf alongside qmake.
-move qt.conf %QTBINDIR%
+move %~dp0qt.conf %QTBINDIR%
 
 @echo QTDIR is set to %QTDIR%
 @echo.
@@ -81,4 +72,3 @@ set ERRORLEV=3
 @goto end
 
 :end
-cd %FIX_QT_PATHS_RESTORE_DIR%
