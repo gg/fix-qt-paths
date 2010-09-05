@@ -21,8 +21,6 @@ set UNXUTILSDIR=%~dp0unxutils
 if not exist %UNXUTILSDIR% goto error_unxutils_not_found
 
 @echo Fixing Qt paths...
-set QTBINDIR=%QTDIR%\bin
-
 set PATH=%QTBINDIR%;%PATH%
 @echo Added %QTBINDIR% to PATH.
 
